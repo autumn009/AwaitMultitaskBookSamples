@@ -1,5 +1,4 @@
-﻿
-Console.WriteLine("Type Enter to Exit");
+﻿Console.WriteLine("Type Enter to Exit");
 subA();
 subB();
 await Console.In.ReadLineAsync();
