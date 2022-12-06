@@ -1,0 +1,47 @@
+﻿@page "/"
+
+<PageTitle>Index</PageTitle>
+
+<button @onclick="Update">Button</button>
+<br/>
+<textarea id="textBox1" @bind="TextImage" @bind:event="oninput" style="height:100em" />
+
+@code{
+    public string TextImage { get; set; } = string.Empty;
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) {
+            var tid = Thread.CurrentThread.ManagedThreadId;
+            var taskid = Task.CurrentId;
+            reportIt("Load", tid, taskid);
+            subAsync(); 
+        }
+        return base.OnAfterRenderAsync(firstRender);
+    }
+    private async void subAsync()
+    {
+        var tid = Thread.CurrentThread.ManagedThreadId;
+        var taskid = Task.CurrentId;
+        for (int i = 0; i < 10; i++)
+        {
+            reportIt(i.ToString(), tid, taskid);
+            await Task.Delay(1000);
+        }
+    }
+    private async void reportIt(string s, int tid, int? taskid)
+    {
+        var t = "null";
+        if (taskid != null) t = taskid.ToString();
+        TextImage += $"{s}: Thread ID:{tid} Task ID:{t}\r\n";
+        await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+    }
+    private void Update()
+    {
+        var tid = Thread.CurrentThread.ManagedThreadId;
+        var taskid = Task.CurrentId;
+        reportIt("Button", tid, taskid);
+    }
+}
